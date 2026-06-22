@@ -49,6 +49,9 @@
         "test-database-integration": "node electron-jest.js -w 1 --verbose --noStackTrace --config jest.database.integration.config.js",
         "lint": "ng lint"
     },
+    "overrides": {
+        "@parcel/watcher": "2.5.1"
+    },
     "devDependencies": {
         "@angular-builders/custom-webpack": "^16.0.0",
         "@angular-devkit/build-angular": "^16.2.10",
