@@ -17,4 +17,5 @@ export abstract class DesktopBase {
     public abstract getMusicDirectory(): string;
     public abstract getApplicationDataDirectory(): string;
     public abstract setWindowAlwaysOnTop(alwaysOnTop: boolean): void;
+    public abstract getProcessArchitecture(): string;
 }

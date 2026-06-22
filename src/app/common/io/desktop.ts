@@ -118,6 +118,10 @@ export class Desktop implements DesktopBase, OnDestroy {
         win.setAlwaysOnTop(alwaysOnTop);
     }
 
+    public getProcessArchitecture(): string {
+        return process.arch;
+    }
+
     /**
      * Gets the accent color on Linux via the Freedesktop Portal D-Bus API.
      * Works on GNOME 42+, KDE Plasma 5.25+, and other compliant desktops.
