@@ -14,6 +14,7 @@ describe('AboutComponent', () => {
     beforeEach(() => {
         dialogServiceMock = Mock.ofType<DialogServiceBase>();
         desktopMock = Mock.ofType<DesktopBase>();
+        desktopMock.setup((x) => x.getProcessArchitecture()).returns(() => 'arm64');
 
         component = new AboutComponent(dialogServiceMock.object, desktopMock.object);
     });
@@ -36,6 +37,16 @@ describe('AboutComponent', () => {
 
             // Assert
             expect(applicationVersion).toEqual(ProductInformation.applicationVersion);
+        });
+
+        it('should set application architecture from the process architecture', () => {
+            // Arrange
+
+            // Act
+            const applicationArchitecture: string = component.applicationArchitecture;
+
+            // Assert
+            expect(applicationArchitecture).toEqual('ARM64');
         });
 
         it('should set application Copyright', () => {

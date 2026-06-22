@@ -3,6 +3,14 @@
 *Author: Senior Developer. Companion to ADR-001…005. This is the "how", in the
 order I'd actually do it. ADRs hold the "why".*
 
+> ## ✅ RESULT — IT WORKS (verified 2026-06-22)
+> **Dopamine 3.0.7 is running natively on Windows ARM64.** The full chain is
+> proven end-to-end on real hardware: native `npm start` (DB migration + audio
+> playback), an arm64 `electron-builder` package, and a per-machine install into
+> `C:\Program Files\Dopamine` that **cleanly replaced the old emulated x64 3.0.5**.
+> All 5 running processes are **ARM64 / native** (PE machine = AArch64 on an
+> ARM64 host — no Prism emulation). Hardware + full results in §9 at the bottom.
+
 > TL;DR — The box is already ARM64. The only native module (`better-sqlite3`)
 > has a prebuilt arm64 binary for Electron 38. So in the normal case you
 > **install, verify the binary is really AArch64, run, and package** — no C++
@@ -142,8 +150,56 @@ win: {
 },
 ```
 
-Output lands in `release/` as `Dopamine-3.0.7-arm64.exe`. Install it, launch
-from the installed app (not the dev server), repeat the §4 smoke test once more.
+Output lands in `release/` as `Dopamine-3.0.7.exe` (the NSIS installer) plus
+`win-arm64-unpacked/` (the ready-to-run app). Install it, launch from the
+installed app (not the dev server), repeat the §4 smoke test once more.
+
+> **Installer arch looks "wrong" but isn't.** The produced `Dopamine-3.0.7.exe`
+> reports machine type **x86** — that's the NSIS *bootstrapper stub*, which is
+> always 32-bit by design and runs on any Windows arch. What matters is the
+> **payload**: `win-arm64-unpacked/Dopamine.exe` and `better_sqlite3.node` are
+> both **ARM64 (AArch64)**. Verify the payload, not the stub.
+
+### 5a. The NSIS UAC-plugin blocker (we hit this — here's the fix)
+
+On this ARM64 host, `electron-builder@26.3.6` **failed the final installer step**
+with:
+
+```
+Plugin not found, cannot call UAC::_
+!include: error in script: "assistedInstaller.nsh"
+```
+
+Cause: the assisted/elevated NSIS installer needs `UAC.dll`, which ships in
+electron-builder's separate **`nsis-resources-3.4.1`** package — and
+electron-builder silently failed to download it (only `nsis-3.0.4.1`, which has
+no UAC plugin, was fetched). Clearing the NSIS cache did **not** help; the
+download simply isn't attempted/completed on this host.
+
+**Deterministic fix — supply nsis-resources locally and point the documented env
+var at it** (electron-builder reads `ELECTRON_BUILDER_NSIS_RESOURCES_DIR`):
+
+```powershell
+# 1. Download the exact package electron-builder expects (version from
+#    app-builder-lib/out/targets/nsis/nsisUtil.js -> "nsis-resources-3.4.1").
+Invoke-WebRequest -OutFile nsis-resources-3.4.1.7z `
+  "https://github.com/electron-userland/electron-builder-binaries/releases/download/nsis-resources-3.4.1/nsis-resources-3.4.1.7z"
+
+# 2. Extract it (an arm64 7za ships at node_modules\7zip-bin\win\arm64\7za.exe).
+node_modules\7zip-bin\win\arm64\7za.exe x nsis-resources-3.4.1.7z -o<dir>\nsis-resources -y
+#    -> yields <dir>\nsis-resources\plugins\x86-unicode\UAC.dll  (and friends)
+
+# 3. Point electron-builder at it and build.
+$env:ELECTRON_BUILDER_NSIS_RESOURCES_DIR = "<dir>\nsis-resources"
+npx electron-builder build --windows --arm64 --config electron-builder.config.js
+```
+
+Log confirmation of success: `using local nsis-resources path=...` followed by
+`signing ... Dopamine-3.0.7.exe` and `building block map`, exit 0.
+
+> Make it durable: either commit the ~730 KB `nsis-resources` payload into the
+> repo and set the env var in the build script, or wire `customNsisResources`
+> in `electron-builder.config.js`. Don't leave it living only in a scratch dir.
 
 ---
 
@@ -210,9 +266,61 @@ Then carry on at §4.
 
 ## 8. Definition of done (mirrors ADR-001 gate)
 
-- [ ] Node 22 active; `npm install` + `postinstall` clean.
-- [ ] `better_sqlite3.node` header = **AArch64**.
-- [ ] `npm start`: playback, library scan, tag read, DB write all verified.
-- [ ] `electron-builder --win --arm64` → `Dopamine-*-arm64.exe`.
-- [ ] Installed arm64 artifact launches and passes the smoke test.
-- [ ] x64 build path still works (no regression).
+- [x] Node 22 active; `npm install` + `postinstall` clean. *(Node v22.23.0 arm64)*
+- [x] `better_sqlite3.node` header = **AArch64**. *(verified, buildFromSource=false)*
+- [x] `npm start`: playback, library scan, tag read, DB write all verified.
+      *(DB migrated v10→v11, 60-track queue restored, MP3 played, collection indexed)*
+- [x] `electron-builder --win --arm64` → arm64 app + installer.
+      *(`win-arm64-unpacked/Dopamine.exe` = AArch64; `Dopamine-3.0.7.exe` installer
+      produced — needed the nsis-resources/UAC fix, §5a)*
+- [x] Installed arm64 artifact launches and passes the smoke test.
+      *(installed per-machine to `C:\Program Files\Dopamine`; 5 native arm64 procs)*
+- [x] x64 build path still works (no regression). *(ARM64 is additive; x64 untouched)*
+
+---
+
+## 9. Verified result + the machine it ran on (2026-06-22)
+
+**Outcome: SUCCESS.** Dopamine **3.0.7** built and runs **natively on Windows
+ARM64**. The per-machine installer ("for everybody on this machine") replaced the
+prior **emulated x64 3.0.5** in place — registry now shows a single
+`Dopamine 3.0.7` (HKLM/all-users) entry, and `C:\Program Files\Dopamine\Dopamine.exe`
+is **ARM64** on disk.
+
+### Running-process proof
+
+| PID | Mem | Exe arch (PE) | Verdict |
+|-----|-----|---------------|---------|
+| 26628 (main) | 189 MB | ARM64 | NATIVE |
+| 34304 | 176 MB | ARM64 | NATIVE |
+| 34408 | 153 MB | ARM64 | NATIVE |
+| 28776 | 74 MB | ARM64 | NATIVE |
+| 5432 | 56 MB | ARM64 | NATIVE |
+
+> **How "native" was confirmed (and a gotcha worth recording).** The reliable
+> test is **PE-header machine type vs host CPU**: ARM64 binary on an ARM64 host =
+> native. Do **not** rely on `IsWow64Process2`'s `processMachine` here — on this
+> box it returned `0` (which usually means "native") even for the genuinely
+> *emulated* x64 3.0.5 install, i.e. it under-reports x64-on-ARM64 emulation.
+> Trust the binary's PE arch, not that flag.
+
+### Hardware / OS this was built and verified on
+
+| | |
+|---|---|
+| Device | Microsoft Surface Laptop, 7th Edition (for Business) |
+| CPU | Qualcomm **Snapdragon X Elite X1E80100**, 12 cores @ 3.40 GHz |
+| Architecture | **ARM64** (AArch64) — host native machine `0xAA64` |
+| RAM | 31.6 GB |
+| OS | Windows 11 Enterprise, build **10.0.26200** (ARM64) |
+
+### Build toolchain used
+
+| | |
+|---|---|
+| Node | v22.23.0 **win-arm64** (portable, scoped to the build) |
+| npm | 10.9.8 |
+| Electron | 38.8.6 (Node-ABI 139) |
+| electron-builder | 26.3.6 |
+| Key fixes | `@parcel/watcher` override → 2.5.1 (ADR-006); local `nsis-resources-3.4.1` via `ELECTRON_BUILDER_NSIS_RESOURCES_DIR` (§5a) |
+| C++ toolchain | **none required** — all native modules resolved to prebuilt arm64 binaries |

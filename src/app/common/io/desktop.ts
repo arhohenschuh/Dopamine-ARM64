@@ -125,6 +125,10 @@ export class Desktop implements DesktopBase, OnDestroy {
         win.setAlwaysOnTop(alwaysOnTop);
     }
 
+    public getProcessArchitecture(): string {
+        return process.arch;
+    }
+
     private isInHomeDirectory(filePath: string): boolean {
         const homeDirectory = os.homedir();
 

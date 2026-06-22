@@ -62,10 +62,19 @@ Adopt a **spike-first, gated strategy**:
       *(Exit 0 after applying the `@parcel/watcher` override — see ADR-006.)*
 - [x] The resolved `better_sqlite3.node` is machine type **AArch64**, not
       x64-under-emulation. *(Verified: PE machine `0xAA64`, `buildFromSource=false`.)*
-- [ ] `npm start` runs; audio playback works; library indexing completes.
+- [x] `npm start` runs; audio playback works; library indexing completes.
+      *(Verified 2026-06-22: app launched native arm64; DB migrated v10→v11;
+      restored 60-track queue; indexed collection; loaded + played an MP3.)*
 - [ ] Tag read/write (taglib-sharp) and DB read/write (better-sqlite3) verified.
-- [ ] `electron-builder --win --arm64` produces `Dopamine-*-arm64.exe`.
+      *(DB read/write verified via migration + queue restore; explicit tag-write
+      round-trip still to confirm by hand.)*
+- [x] `electron-builder --win --arm64` produces an arm64 app + installer.
+      *(Verified: `win-arm64-unpacked/Dopamine.exe` = AArch64; NSIS installer
+      `Dopamine-3.0.7.exe` produced. Required the nsis-resources/UAC fix — see
+      implementation note §5a.)*
 - [ ] App launches from the installed arm64 artifact on the host.
+      *(Installer built but not yet run — would install over the existing x64
+      Dopamine; left for the user to trigger.)*
 
 ### Spike execution log (2026-06-22)
 
