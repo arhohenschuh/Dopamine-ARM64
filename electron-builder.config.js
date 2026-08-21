@@ -86,7 +86,7 @@ const config = {
     extraResources: ['LICENSE'],
     win: {
         target: ['nsis'],
-        artifactName: `\${productName}-${getFullVersion()}.\${ext}`,
+        artifactName: `\${productName}-${getFullVersion()}-\${arch}.\${ext}`,
     },
     mac: {
         target: ['dmg'],

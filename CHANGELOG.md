@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.9] - 2026-08-19
 
+### Windows ARM64 production release - 2026-08-21
+
+- Upgraded the Windows ARM64 production build from Dopamine 3.0.7 to 3.0.9.
+- Built natively for Windows ARM64 with Electron 38.8.6 and `better-sqlite3` 12.5.0.
+- Added an explicit ARM64 packaging command and architecture-specific installer name: `Dopamine-3.0.9-arm64.exe`.
+
 ### Added
 
 - Added an equalizer
