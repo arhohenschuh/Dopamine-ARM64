@@ -3,6 +3,21 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.10] - 2026-08-28
+
+### Changed
+
+- Improved the equalizer design
+- Updated the German translation (Thank you @mgfirewater)
+- Updated the Russian translation (Thank you @adem4ik)
+
+### Fixed
+
+- Empty strings in Equalizer with incomplete language packs
+- When sorting large playlists, songs sometimes still move back to their original position.
+- Mini player has incorrect size on macOS
+- Window restore issues on macOS and GNU/Linux (Wayland)
+
 ## [3.0.9] - 2026-08-19
 
 ### Windows ARM64 production release - 2026-08-21
@@ -42,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changed
 
 - Improved rating and love backup
-- Updated the Bulgarian translation (Thank you kukata)
+- Updated the Bulgarian translation (Thank you @kukata)
 - Updated the Simplified Chinese translation (Thank you @jeremyooh)
 - Updated the Portuguese translation (Thank you @Blackspirits)
 - Updated the Vietnamese translation (Thank you @honhatduy)
@@ -144,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Playback progress bar does not react to touch input
 - The cover image on the Now playing screen has glitches
 - Browsing folders on a NAS gets stuck in an infinite loop
-- Follow the system color does not work on Linux
+- Follow the system color does not work on GNU/Linux
 
 ## [3.0.3] - 2026-03-30
 
@@ -225,7 +240,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Crash when trying to play ALAC M4A file. Those are not supported. Instead of a crash, the user is now informed why the file doesn't play.
 - Crash when starting files from the operating system's file browser
 - Issue where the Edit song dialog replaces '/' by ';' for artists containing a '/' in their name
-- Linux Snap issue that caused file dialog text to appear as squares instead of readable characters
+- GNU/Linux Snap issue that caused file dialog text to appear as squares instead of readable characters
 
 ## [3.0.0] - 2025-11-06
 
@@ -233,7 +248,7 @@ First release!
 
 Highlights:
 
-- Multi-platform support - Dopamine now runs seamlessly on Windows, Linux, and macOS.
+- Multi-platform support - Dopamine now runs seamlessly on Windows, GNU/Linux, and macOS.
 - Playlist folders - Organize your playlists into folders for better structure and easier navigation.
 - Gapless playback - Enjoy smooth, uninterrupted transitions between tracks.
 - Logarithmic volume control - Experience more natural and precise volume adjustments.
