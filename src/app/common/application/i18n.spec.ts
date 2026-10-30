@@ -221,6 +221,7 @@ describe('validate i18n', () => {
         'play',
         'play-all',
         'playback-queue',
+        'playback-speed',
         'playback-state',
         'playing',
         'playing-with-dopamine',
@@ -254,6 +255,7 @@ describe('validate i18n', () => {
         'refresh-themes',
         'refreshing',
         'remember-playback-state-after-restart',
+        'remember-scroll-position',
         'remove-artist',
         'remove-artist-error',
         'remove-from-playback-queue',
@@ -272,6 +274,7 @@ describe('validate i18n', () => {
         'save-rating-to-audio-files',
         'save-tags-error-multiple-files',
         'save-tags-error-single-file',
+        'scrolling',
         'second',
         'seconds',
         'select-folder',
@@ -332,6 +335,7 @@ describe('validate i18n', () => {
         'replaygain-scan-tags-external-tool',
         'replaygain-tool-rsgain',
         'show-album-on-now-playing-page',
+        'show-year-on-now-playing-page',
         'unknown-album',
         'unknown-artist',
         'unknown-genre',
@@ -426,11 +430,16 @@ describe('validate i18n', () => {
         "equalizer-preset-treble-boost",
         "equalizer-preset-treble-reducer",
         "equalizer-preset-vocal",
+        "clear-queue",
         "clear-selection",
         "reset",
         "compact-total-duration",
         "by-file-name-ascending",
-        "by-file-name-descending"
+        "by-file-name-descending",
+        "show-wave-progress",
+        "playback-controls",
+        "show-stop-button",
+        "stop"
     ].sort();
 
     Constants.languages.forEach((language) => {

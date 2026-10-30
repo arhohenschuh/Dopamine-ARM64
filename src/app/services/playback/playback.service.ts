@@ -45,6 +45,7 @@ export class PlaybackService {
     private _canPause: boolean = false;
     private _canResume: boolean = true;
     private _volumeBeforeMute: number = 0;
+    private _playbackSpeed: number = 1;
     private _shouldReportProgress: boolean = false;
     private _progressInterval: number = 0;
     private subscription: Subscription = new Subscription();
@@ -70,6 +71,7 @@ export class PlaybackService {
         this._audioPlayer = this.audioPlayerFactory.create();
         this.initializeSubscriptions();
         this.applyVolumeFromSettings();
+        this._audioPlayer.setPlaybackRate(this._playbackSpeed);
     }
 
     public get playbackQueue(): TrackModels {
@@ -95,6 +97,17 @@ export class PlaybackService {
 
     public set volume(v: number) {
         this.applyVolume(v);
+    }
+
+    public get playbackSpeed(): number {
+        return this._playbackSpeed;
+    }
+
+    public set playbackSpeed(v: number) {
+        const clampedSpeed: number = Math.min(3, Math.max(0.5, v));
+        const playbackSpeed: number = Math.round((clampedSpeed - 0.5) / 0.05) * 0.05 + 0.5;
+        this._playbackSpeed = Math.round(playbackSpeed * 100) / 100;
+        this._audioPlayer.setPlaybackRate(this._playbackSpeed);
     }
 
     public get progress(): PlaybackProgress {
@@ -234,6 +247,11 @@ export class PlaybackService {
         this.scheduleQueueSave();
     }
 
+    public clearQueue(): void {
+        this.queue.removeTracks(this.queue.tracks);
+        this.scheduleQueueSave();
+    }
+
     public reorderQueue(previousIndex: number, currentIndex: number): void {
         this.queue.moveTrackInPlaybackOrder(previousIndex, currentIndex);
         this.scheduleQueueSave();
@@ -302,10 +320,10 @@ export class PlaybackService {
 
     public async resumeAsync(): Promise<void> {
         if (!this.isPlaying) {
-            const firstTrack: TrackModel | undefined = this.queue.getFirstTrack();
+            const trackToResume: TrackModel | undefined = this.currentTrack ?? this.queue.getFirstTrack();
 
-            if (firstTrack != undefined) {
-                await this.stopAndPlayAsync(this.queue.getFirstTrack()!, false);
+            if (trackToResume != undefined) {
+                await this.stopAndPlayAsync(trackToResume, false);
                 return;
             }
 
@@ -465,6 +483,27 @@ export class PlaybackService {
         }
 
         this.currentTrack = undefined;
+        this.mediaSessionService.clearMetadata();
+        this.playbackStopped.next();
+    }
+
+    /**
+     * Fully stops playback and resets progress to the start, keeping the current track so that a subsequent resumeAsync() restarts it from the beginning.
+     */
+    public stopPlayback(): void {
+        if (this.currentTrack == undefined) {
+            return;
+        }
+
+        this.audioPlayer.stop();
+        this._isPlaying = false;
+        this._canPause = false;
+        this._canResume = true;
+        this.stopUpdatingProgress();
+        this.mediaSessionService.clearMetadata();
+
+        this.logger.info(`Stopping playback for '${this.currentTrack.path}'`, 'PlaybackService', 'stopPlayback');
+
         this.playbackStopped.next();
     }
 

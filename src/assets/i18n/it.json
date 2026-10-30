@@ -109,6 +109,7 @@
     "previous": "Precedente",
     "loop": "Ripeti",
     "shuffle": "Mischia",
+    "playback-speed": "Playback speed",
     "confirm-delete-folder": "Rimuovere cartella?",
     "confirm-delete-folder-long": "Sei sicuro di voler rimuovere la cartella '{{folderPath}}'?",
     "error": "Errore",
@@ -425,5 +426,13 @@
     "clear-selection": "Clear selection",
     "compact-total-duration": "Compact total duration format ((H)H:MM:SS)",
     "by-file-name-ascending": "File name A-Z",
-    "by-file-name-descending": "File name Z-A"
+    "by-file-name-descending": "File name Z-A",
+    "show-wave-progress": "Show wave progress",
+    "stop": "Stop",
+    "show-stop-button": "Show stop button",
+    "playback-controls": "Playback controls",
+    "scrolling": "Scrolling",
+    "remember-scroll-position": "Remember scroll position of lists",
+    "clear-queue": "Clear queue",
+    "show-year-on-now-playing-page": "Show year on now playing page"
 }

@@ -709,6 +709,15 @@ export class Settings implements SettingsBase {
         this.set('showAlbumOnNowPlayingPage', v);
     }
 
+    // showYearOnNowPlayingPage
+    public get showYearOnNowPlayingPage(): boolean {
+        return this.get<boolean>('showYearOnNowPlayingPage') ?? true;
+    }
+
+    public set showYearOnNowPlayingPage(v: boolean) {
+        this.set('showYearOnNowPlayingPage', v);
+    }
+
     // downloadArtistInformationFromLastFm
     public get downloadArtistInformationFromLastFm(): boolean {
         return this.get<boolean>('downloadArtistInformationFromLastFm');
@@ -725,6 +734,15 @@ export class Settings implements SettingsBase {
 
     public set downloadLyricsOnline(v: boolean) {
         this.set('downloadLyricsOnline', v);
+    }
+
+    // showWaveProgress
+    public get showWaveProgress(): boolean {
+        return this.get<boolean>('showWaveProgress') ?? true;
+    }
+
+    public set showWaveProgress(v: boolean) {
+        this.set('showWaveProgress', v);
     }
 
     // showAudioVisualizer
@@ -762,6 +780,15 @@ export class Settings implements SettingsBase {
 
     public set keepPlaybackControlsVisibleOnNowPlayingPage(v: boolean) {
         this.set('keepPlaybackControlsVisibleOnNowPlayingPage', v);
+    }
+
+    // showStopButton
+    public get showStopButton(): boolean {
+        return this.get<boolean>('showStopButton');
+    }
+
+    public set showStopButton(v: boolean) {
+        this.set('showStopButton', v);
     }
 
     // albumsDefinedByTitleAndArtist
@@ -971,6 +998,15 @@ export class Settings implements SettingsBase {
 
     public set jumpToPlayingSong(v: boolean) {
         this.set('jumpToPlayingSong', v);
+    }
+
+    // rememberScrollPosition
+    public get rememberScrollPosition(): boolean {
+        return this.get<boolean>('rememberScrollPosition');
+    }
+
+    public set rememberScrollPosition(v: boolean) {
+        this.set('rememberScrollPosition', v);
     }
 
     // showSquareImages

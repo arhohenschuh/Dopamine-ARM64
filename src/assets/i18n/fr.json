@@ -109,6 +109,7 @@
     "previous": "Précédent",
     "loop": "Boucle",
     "shuffle": "Aléatoire",
+    "playback-speed": "Vitesse de lecture",
     "confirm-delete-folder": "Supprimer dossier?",
     "confirm-delete-folder-long": "Voulez-vous vraiment supprimer le dossier '{{folderPath}}'?",
     "error": "Erreur",
@@ -425,5 +426,13 @@
     "clear-selection": "Effacer la sélection",
     "compact-total-duration": "Format compact de la durée totale ((H)H:MM:SS)",
     "by-file-name-ascending": "Nom de fichier A-Z",
-    "by-file-name-descending": "Nom de fichier Z-A"
+    "by-file-name-descending": "Nom de fichier Z-A",
+    "show-wave-progress": "Afficher la progression en forme d'onde",
+    "stop": "Arrêter",
+    "show-stop-button": "Afficher le bouton d'arrêt",
+    "playback-controls": "Contrôles de lecture",
+    "scrolling": "Défilement",
+    "remember-scroll-position": "Se souvenir de la position de défilement des listes",
+    "clear-queue": "Vider la file d’attente",
+    "show-year-on-now-playing-page": "Afficher l'année sur la page 'Lecture en cours'"
 }

@@ -3,6 +3,36 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.11] - 2026-09-25
+
+### Windows ARM64 release - 2026-10-30
+
+- Merged the stable upstream v3.0.11 release while preserving the Windows ARM64 build configuration.
+- Built natively with Electron 38.8.6 and `better-sqlite3` 12.5.0.
+- Installer: `Dopamine-3.0.11-arm64.exe` (unsigned).
+
+### Added
+
+- Added optional wave progress bar
+- Ctrl+F now selects all text in the search box for quick replacement
+- Added optional Stop button (Hidden by default, but can be enabled in the settings.)
+- Scroll position is now remembered when switching screens
+- Added buttons to the playback queue to clear the queue and to add the queued songs to a playlist
+- Added album release date to album image tooltips and optionally on the nog playing page
+- Added a playback speed control (Thank you @henryshuen)
+
+### Changed
+
+- Updated the Simplified Chinese translation (Thank you @jeremyooh)
+- Updated the Vietnamese translation (Thank you @honhatduy)
+
+### Fixed
+
+- Adding artist image doesn't always work
+- Crash when displaying rich lyrics of songs with a lot of artists
+- On KDE, Dopamine appears under "Lost & Found" in the application menu instead of "Multimedia" (Thank you @adem4ik).
+- Failure to index files with malformed TXXX frames
+
 ## [3.0.10] - 2026-08-28
 
 ### Changed

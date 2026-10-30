@@ -28,6 +28,7 @@ export class SettingsMock implements SettingsBase {
     public closeToNotificationArea: boolean;
     public downloadArtistInformationFromLastFm: boolean;
     public downloadLyricsOnline: boolean;
+    public showWaveProgress: boolean = true;
     public downloadMissingAlbumCovers: boolean;
     public showArtistImages: boolean;
     public showArtistImagesAsBackground: boolean;
@@ -51,6 +52,7 @@ export class SettingsMock implements SettingsBase {
     public genresTabSelectedTrackOrder: string;
     public invertNotificationAreaIconColor: boolean;
     public keepPlaybackControlsVisibleOnNowPlayingPage: boolean;
+    public showStopButton: boolean;
     public language: string;
     public lastFmPassword: string;
     public lastFmSessionKey: string;
@@ -76,6 +78,7 @@ export class SettingsMock implements SettingsBase {
     public showIconInNotificationArea: boolean;
     public showLove: boolean;
     public showAlbumOnNowPlayingPage: boolean;
+    public showYearOnNowPlayingPage: boolean;
     public showPlaylistsPage: boolean;
     public showRating: boolean;
     public showTracksPage: boolean;
@@ -107,6 +110,7 @@ export class SettingsMock implements SettingsBase {
     public replayGainPreventClipping: boolean;
     public logReplayGainAtTrackStart: boolean;
     public jumpToPlayingSong: boolean;
+    public rememberScrollPosition: boolean;
     public showSquareImages: boolean;
     public useCompactYearView: boolean;
     public useCompactTrackListView: boolean;

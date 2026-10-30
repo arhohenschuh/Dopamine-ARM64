@@ -327,6 +327,41 @@ describe('PlaybackService', () => {
             audioPlayerMock.verify((x) => x.setVolume(0.6, It.isAny()), Times.exactly(1));
         });
 
+        it('should initialize playback speed to 1x without reading settings', () => {
+            // Arrange, Act
+            const service: PlaybackService = createService();
+
+            // Assert
+            expect(service.playbackSpeed).toEqual(1);
+            audioPlayerMock.verify((x) => x.setPlaybackRate(1), Times.once());
+        });
+
+        it('should clamp and round playback speed to 0.05x steps', () => {
+            // Arrange
+            const service: PlaybackService = createService();
+            audioPlayerMock.reset();
+
+            // Act
+            service.playbackSpeed = 3.001;
+
+            // Assert
+            expect(service.playbackSpeed).toEqual(3);
+            audioPlayerMock.verify((x) => x.setPlaybackRate(3), Times.once());
+        });
+
+        it('should not set playback speed below 0.5x', () => {
+            // Arrange
+            const service: PlaybackService = createService();
+            audioPlayerMock.reset();
+
+            // Act
+            service.playbackSpeed = 0.1;
+
+            // Assert
+            expect(service.playbackSpeed).toEqual(0.5);
+            audioPlayerMock.verify((x) => x.setPlaybackRate(0.5), Times.once());
+        });
+
         it('should stop playback on playback finished if a next track is not found', () => {
             // Arrange
             const service: PlaybackService = createService();
@@ -2383,6 +2418,36 @@ describe('PlaybackService', () => {
         });
     });
 
+    describe('clearQueue', () => {
+        it('should remove all tracks from the queue', () => {
+            // Arrange
+            queueMock.setup((x) => x.tracks).returns(() => tracks.tracks);
+            const service: PlaybackService = createService();
+
+            // Act
+            service.clearQueue();
+
+            // Assert
+            queueMock.verify((x) => x.removeTracks(tracks.tracks), Times.once());
+        });
+
+        it('should save queue after debounce when the queue is cleared', () => {
+            // Arrange
+            jest.useFakeTimers();
+            settingsStub.rememberPlaybackStateAfterRestart = true;
+            queueMock.setup((x) => x.tracks).returns(() => tracks.tracks);
+            const service: PlaybackService = createService();
+
+            // Act
+            service.clearQueue();
+            jest.runAllTimers();
+
+            // Assert
+            queuePersisterMock.verify((x) => x.save(It.isAny(), It.isAny(), It.isAny()), Times.once());
+            jest.useRealTimers();
+        });
+    });
+
     describe('reorderQueue', () => {
         it('should move tracks in queue from previous index to current index', () => {
             // Arrange
@@ -2679,6 +2744,88 @@ describe('PlaybackService', () => {
             // Assert
             queueMock.verify((x) => x.getNextTrack(trackModel1, It.isAny()), Times.once());
             audioPlayerMock.verify((x) => x.playAsync(trackModel2), Times.once());
+        });
+    });
+
+    describe('stopPlayback', () => {
+        it('should not stop the audio player if there is no current track', () => {
+            // Arrange
+            const service: PlaybackService = createService();
+
+            // Act
+            service.stopPlayback();
+
+            // Assert
+            audioPlayerMock.verify((x) => x.stop(), Times.never());
+        });
+
+        it('should stop the audio player, reset playing state and keep the current track', async () => {
+            // Arrange
+            const service: PlaybackService = createService();
+            queueMock.setup((x) => x.getFirstTrack()).returns(() => trackModel1);
+            await service.enqueueAndPlayTracksAsync(trackModels);
+            audioPlayerMock.reset();
+
+            // Act
+            service.stopPlayback();
+
+            // Assert
+            audioPlayerMock.verify((x) => x.stop(), Times.once());
+            expect(service.isPlaying).toBeFalsy();
+            expect(service.canPause).toBeFalsy();
+            expect(service.canResume).toBeTruthy();
+            expect(service.currentTrack).toBe(trackModel1);
+        });
+
+        it('should clear media session metadata', async () => {
+            // Arrange
+            const service: PlaybackService = createService();
+            queueMock.setup((x) => x.getFirstTrack()).returns(() => trackModel1);
+            await service.enqueueAndPlayTracksAsync(trackModels);
+            audioPlayerMock.reset();
+
+            // Act
+            service.stopPlayback();
+
+            // Assert
+            mediaSessionServiceMock.verify((x) => x.clearMetadata(), Times.once());
+        });
+
+        it('should raise an event that playback is stopped', async () => {
+            // Arrange
+            const service: PlaybackService = createService();
+            queueMock.setup((x) => x.getFirstTrack()).returns(() => trackModel1);
+            await service.enqueueAndPlayTracksAsync(trackModels);
+            audioPlayerMock.reset();
+            let playbackIsStopped: boolean = false;
+
+            subscription.add(
+                service.playbackStopped$.subscribe(() => {
+                    playbackIsStopped = true;
+                }),
+            );
+
+            // Act
+            service.stopPlayback();
+
+            // Assert
+            expect(playbackIsStopped).toBeTruthy();
+        });
+
+        it('should resume the same track from the start when resumeAsync is called after stopPlayback', async () => {
+            // Arrange
+            const service: PlaybackService = createService();
+            queueMock.setup((x) => x.getFirstTrack()).returns(() => trackModel1);
+            await service.enqueueAndPlayTracksAsync(trackModels);
+            audioPlayerMock.reset();
+            service.stopPlayback();
+            audioPlayerMock.reset();
+
+            // Act
+            await service.resumeAsync();
+
+            // Assert
+            audioPlayerMock.verify((x) => x.playAsync(trackModel1), Times.once());
         });
     });
 
